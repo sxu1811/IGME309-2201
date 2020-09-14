@@ -276,7 +276,81 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+		//make vector array to store points
+	std::vector<vector3 > vertex;
+	std::vector<vector3 > vertex2;
+
+
+	//starting point for outer circle points
+	GLfloat first = 0;
+
+	//this gives us how much we want to go around the circle by to begin the next triangle in the circle
+	GLfloat second = (2 * PI / a_nSubdivisions);
+
+	//for each subdivision, calculate the x and y positions for the outside points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+
+
+		vector3 temp = vector3(
+			sin(first) * a_fRadius,
+			//adjusted for radius
+			-a_fHeight / 2.0f,
+			cos(first) * a_fRadius
+		);
+
+		//add onto the outer angle to begin at the next point
+		first += second;
+
+		//add point onto vertex array
+		vertex.push_back(temp);
+	}
+
+	//calculate triangles and their respective points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//first is the center of the circle, second is the vertex that was pushed to the array, 
+		//third is the next point after the previous tri adjusted to the number of subdivisions
+		AddTri(
+			vector3(0.0f, 0.0f, 0.0f),
+			vertex[i],
+			vertex[(i + 1) % a_nSubdivisions]
+		);
+	}
+
+	//-----------------
+
+	//for each subdivision, calculate the x and y positions for the outside points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//make a point in space relative to center point
+		//cos gives x pos
+		//sin gives y pos
+		vector3 temp = vector3(
+			cos(first) * a_fRadius,
+			-a_fHeight / 2.0f,
+			sin(first) * a_fRadius
+
+		);
+
+		//add onto the outer angle to begin at the next point
+		first += second;
+
+		//add point onto vertex array
+		vertex2.push_back(temp);
+	}
+
+	//calculate triangles and their respective points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//first is the center of the circle, second is the vertex that was pushed to the array, 
+		//third is the next point after the previous tri adjusted to the number of subdivisions
+		AddTri(
+			vector3(0.0f, -a_fHeight / 2.0f, 0.0f),
+			vertex2[i],
+			vertex2[(i + 1) % a_nSubdivisions]
+		);
+	}
 	// -------------------------------
 
 	// Adding information about color
@@ -300,9 +374,91 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//make vector array to store points
+	std::vector<vector3 > vertex;
+	std::vector<vector3 > vertex2;
+	std::vector<vector3 > vertex3;
 
+
+
+	//starting point for outer circle points
+	GLfloat first = 0;
+
+	//this gives us how much we want to go around the circle by to begin the next triangle in the circle
+	GLfloat second = (2 * PI / a_nSubdivisions);
+
+	//for each subdivision, calculate the x and y positions for the outside points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//make a point in space relative to center point
+		//cos gives x pos
+		//sin gives y pos
+		//z is depth, not needed for circle
+		vector3 temp = vector3(
+			sin(first) * a_fRadius,
+			a_fHeight / 2.0f,
+			cos(first) * a_fRadius
+		);
+
+		//add onto the outer angle to begin at the next point
+		first += second;
+
+		//add point onto vertex array
+		vertex.push_back(temp);
+	}
+
+	//calculate triangles and their respective points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//first is the center of the circle, second is the vertex that was pushed to the array, 
+		//third is the next point after the previous tri adjusted to the number of subdivisions
+		AddTri(
+			vector3(0.0f, a_fHeight / 2.0f, 0.0f),
+			vertex[i],
+			vertex[(i + 1) % a_nSubdivisions]
+		);
+	}
+
+	//----------------- BOTTOM
+
+	//for each subdivision, calculate the x and y positions for the outside points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//make a point in space relative to center point
+		//cos gives x pos
+		//sin gives y pos
+		vector3 temp = vector3(
+			cos(first) * a_fRadius,
+			-a_fHeight / 2.0f,
+			sin(first) * a_fRadius
+		);
+
+		//add onto the outer angle to begin at the next point
+		first += second;
+
+		//add point onto vertex array
+		vertex2.push_back(temp);
+	}
+
+	//calculate triangles and their respective points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//first is the center of the circle, second is the vertex that was pushed to the array, 
+		//third is the next point after the previous tri adjusted to the number of subdivisions
+		AddTri(
+			vector3(0.0f, -a_fHeight/2.0f, 0.0f),
+			vertex2[i],
+			vertex2[(i + 1) % a_nSubdivisions]
+		);
+	}
+
+	//AddQuad( vertex2[1], vertex2[0], vertex[0], vertex[1]);
+	
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		AddQuad(vertex2[(i + 1) % a_nSubdivisions], vertex2[i],  vertex[i], vertex[(i + 1) % a_nSubdivisions]);
+	}
+	
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();

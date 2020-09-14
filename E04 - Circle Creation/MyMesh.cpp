@@ -17,6 +17,85 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		then call the AddTri function to generate a_nSubdivision number of faces
 	*/
 
+
+	//make vector array to store points
+	std::vector<vector3 > vertex;
+	std::vector<vector3 > vertex2;
+	std::vector<vector3 > vertex3;
+
+
+
+	//starting point for outer circle points
+	GLfloat first = 0;
+
+	//this gives us how much we want to go around the circle by to begin the next triangle in the circle
+	GLfloat second = (2 * PI / a_nSubdivisions);
+
+	//for each subdivision, calculate the x and y positions for the outside points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//make a point in space relative to center point
+		//cos gives x pos
+		//sin gives y pos
+		//z is depth, not needed for circle
+		vector3 temp = vector3(
+			sin(first) * a_fRadius,
+			3.0f,
+			cos(first) * a_fRadius
+		);
+
+		//add onto the outer angle to begin at the next point
+		first += second;
+
+		//add point onto vertex array
+		vertex.push_back(temp);
+	}
+
+	//calculate triangles and their respective points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//first is the center of the circle, second is the vertex that was pushed to the array, 
+		//third is the next point after the previous tri adjusted to the number of subdivisions
+		AddTri(
+			vector3(0.0f,3.0f,0.0f), 
+			vertex[i], 
+			vertex[(i + 1) % a_nSubdivisions]
+		);
+	}
+
+	//----------------- BOTTOM
+	
+	//for each subdivision, calculate the x and y positions for the outside points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//make a point in space relative to center point
+		//cos gives x pos
+		//sin gives y pos
+		vector3 temp = vector3(
+			cos(first) * a_fRadius,
+			-3.0f,
+			sin(first) * a_fRadius
+		);
+
+		//add onto the outer angle to begin at the next point
+		first += second;
+
+		//add point onto vertex array
+		vertex2.push_back(temp);
+	}
+
+	//calculate triangles and their respective points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//first is the center of the circle, second is the vertex that was pushed to the array, 
+		//third is the next point after the previous tri adjusted to the number of subdivisions
+		AddTri(
+			vector3(0.0f, -3.0f, 0.0f),
+			vertex2[i],
+			vertex2[(i + 1) % a_nSubdivisions]
+		);
+	}
+	
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
@@ -175,7 +254,7 @@ void MyMesh::AddTri(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vTo
 {
 	//C
 	//| \
-		//A--B
+	//A--B
 //This will make the triangle A->B->C 
 	AddVertexPosition(a_vBottomLeft);
 	AddVertexPosition(a_vBottomRight);

@@ -3,12 +3,13 @@
 AppClass::AppClass(std::string a_windowName) : m_sWindowName(a_windowName) {}
 AppClass::AppClass(AppClass const& input) {}
 AppClass& AppClass::operator=(AppClass const& input) { return *this; }
-AppClass::~AppClass(void){ Release(); }
+AppClass::~AppClass(void) { Release(); }
+
 void AppClass::Run(void)
 {
 	//Initialize the system with the fields recollected by the constructor
 	Init();
-	
+
 	//Set the background color
 	glClearColor(0.392f, 0.584f, 0.929f, 1.0f);
 
@@ -67,7 +68,7 @@ void AppClass::InitOpenGL(void)
 }
 void AppClass::InitShaders(void)
 {
-	m_uShaderProgramID = LoadShaders("Shaders//BasicColor.vs", "Shaders//BasicColor.fs");
+	m_uShaderProgramID = LoadShaders("Shaders//BasicColor.vs", "Shaders//BasicColorInvert.fs");
 	glUseProgram(m_uShaderProgramID);
 }
 void AppClass::InitVariables(void)
@@ -82,7 +83,7 @@ void AppClass::InitVariables(void)
 	//vertex 3
 	lVertex.push_back(glm::vec3(0.0f, 1.0f, 0.0f)); //position
 	lVertex.push_back(glm::vec3(0.0f, 0.0f, 1.0f)); //color
-	
+
 	glGenVertexArrays(1, &m_uVAO);//Generate vertex array object
 	glGenBuffers(1, &m_uVBO);//Generate Vertex Buffered Object
 
@@ -94,7 +95,7 @@ void AppClass::InitVariables(void)
 
 	//count the attributes
 	int attributeCount = 2;
-	
+
 	// Position attribute
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, attributeCount * sizeof(glm::vec3), (GLvoid*)0);
@@ -115,6 +116,8 @@ void AppClass::ProcessKeyboard(sf::Event a_event)
 		m_v3Color = glm::vec3(0.0f, 0.0f, 1.0f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0))
 		m_v3Color = glm::vec3(-1.0f, -1.0f, -1.0f);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))//keypress for complimentary color
+		colorCompliment = !colorCompliment;
 }
 void AppClass::Display(void)
 {
@@ -124,6 +127,10 @@ void AppClass::Display(void)
 	//read uniforms and send values
 	GLuint SolidColor = glGetUniformLocation(m_uShaderProgramID, "SolidColor");
 	glUniform3f(SolidColor, m_v3Color.r, m_v3Color.g, m_v3Color.b);
+
+	//get complimentary colors
+	GLuint Compliment = glGetUniformLocation(m_uShaderProgramID, "Complimentary");
+	glUniform1i(Compliment, colorCompliment);
 
 	//draw content
 	glDrawArrays(GL_TRIANGLES, 0, 3);
