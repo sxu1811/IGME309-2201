@@ -621,6 +621,9 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 
 	//make vector array to store points
 	std::vector<vector3 > vertex;
+	std::vector<vector3 > vertex2;
+	std::vector<vector3 > vertex3;
+	std::vector<vector3 > vertex4;
 
 	//radius of circle
 	GLfloat radius = ((a_fOuterRadius - a_fInnerRadius) / 2);
@@ -649,14 +652,84 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 
 		//translate temp vector3 using distanceFromZero as distance to move
 		//1 is position, 0 is direction
-		temp = glm::vec3(glm::translate(vector3(1, 0, 0)) * vector4(temp, 1));
-		temp = glm::rotate(IDENTITY_M4, glm::radians(30.0f), AXIS_Y)*vector4(temp, 1);
+		temp = glm::vec3(glm::translate(vector3(distanceFromZero, 0, 0)) * vector4(temp, 1));
+		temp = glm::rotate(IDENTITY_M4, glm::radians(0.0f), AXIS_Y)*vector4(temp, 1);
 
 		//add onto the outer angle to begin at the next point
 		first += second;
 
 		//add point onto vertex array
 		vertex.push_back(temp);
+
+		//-------------------------------- TEST
+
+		vector3 temp2 = vector3(
+			sin(first) * radius,
+			cos(first) * radius,
+			0.0f
+
+		);
+
+		//rotate temp vector3 by subdivision(first)
+
+
+		//translate temp vector3 using distanceFromZero as distance to move
+		//1 is position, 0 is direction
+		temp2 = glm::vec3(glm::translate(vector3(distanceFromZero, 0, 0)) * vector4(temp2, 1));
+		temp2 = glm::rotate(IDENTITY_M4, glm::radians(90.0f), AXIS_Y) * vector4(temp2, 1);
+
+		//add onto the outer angle to begin at the next point
+		//first += second;
+
+		//add point onto vertex array
+		vertex2.push_back(temp2);
+
+		//-------------------------------- TEST
+
+		vector3 temp3 = vector3(
+			sin(first) * radius,
+			cos(first) * radius,
+			0.0f
+
+		);
+
+		//rotate temp vector3 by subdivision(first)
+
+
+		//translate temp vector3 using distanceFromZero as distance to move
+		//1 is position, 0 is direction
+		temp3 = glm::vec3(glm::translate(vector3(distanceFromZero, 0, 0)) * vector4(temp3, 1));
+		temp3 = glm::rotate(IDENTITY_M4, glm::radians(180.0f), AXIS_Y) * vector4(temp3, 1);
+
+		//add onto the outer angle to begin at the next point
+		//first += second;
+
+		//add point onto vertex array
+		vertex3.push_back(temp3);
+
+		//-------------------------------- TEST
+
+		vector3 temp4 = vector3(
+			sin(first) * radius,
+			cos(first) * radius,
+			0.0f
+
+		);
+
+		//rotate temp vector3 by subdivision(first)
+
+
+		//translate temp vector3 using distanceFromZero as distance to move
+		//1 is position, 0 is direction
+		temp4 = glm::vec3(glm::translate(vector3(distanceFromZero, 0, 0)) * vector4(temp4, 1));
+		temp4 = glm::rotate(IDENTITY_M4, glm::radians(270.0f), AXIS_Y) * vector4(temp4, 1);
+
+		//add onto the outer angle to begin at the next point
+		//first += second;
+
+		//add point onto vertex array
+		vertex4.push_back(temp4);
+
 
 	}
 
@@ -665,10 +738,29 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	{
 		//first is the center of the circle, second is the vertex that was pushed to the array, 
 		//third is the next point after the previous tri adjusted to the number of subdivisions
-		AddTri(
-			vector3(0.0f, 0.0f, 0.0f),
+		AddQuad(
+			vertex2[(i + 1) % a_nSubdivisionsA],
+			vertex2[i],
 			vertex[(i + 1) % a_nSubdivisionsA],
 			vertex[i]
+		);
+		AddQuad(
+			vertex3[(i + 1) % a_nSubdivisionsA],
+			vertex3[i],
+			vertex2[(i + 1) % a_nSubdivisionsA],
+			vertex2[i]
+		);
+		AddQuad(
+			vertex4[(i + 1) % a_nSubdivisionsA],
+			vertex4[i],
+			vertex3[(i + 1) % a_nSubdivisionsA],
+			vertex3[i]
+		);
+		AddQuad(
+			vertex[(i + 1) % a_nSubdivisionsA],
+			vertex[i],
+			vertex4[(i + 1) % a_nSubdivisionsA],
+			vertex4[i]
 		);
 	}
 
