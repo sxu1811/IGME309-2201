@@ -656,7 +656,6 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 		temp = glm::rotate(IDENTITY_M4, glm::radians(0.0f), AXIS_Y)*vector4(temp, 1);
 
 		//add onto the outer angle to begin at the next point
-		first += second;
 
 		//add point onto vertex array
 		vertex.push_back(temp);
@@ -716,16 +715,14 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 
 		);
 
-		//rotate temp vector3 by subdivision(first)
-
 
 		//translate temp vector3 using distanceFromZero as distance to move
 		//1 is position, 0 is direction
 		temp4 = glm::vec3(glm::translate(vector3(distanceFromZero, 0, 0)) * vector4(temp4, 1));
 		temp4 = glm::rotate(IDENTITY_M4, glm::radians(270.0f), AXIS_Y) * vector4(temp4, 1);
 
-		//add onto the outer angle to begin at the next point
-		//first += second;
+
+		first += second;
 
 		//add point onto vertex array
 		vertex4.push_back(temp4);
