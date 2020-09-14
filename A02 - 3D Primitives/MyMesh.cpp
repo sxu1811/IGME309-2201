@@ -279,6 +279,8 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 		//make vector array to store points
 	std::vector<vector3 > vertex;
 	std::vector<vector3 > vertex2;
+	std::vector<vector3 > vertexCopy;
+
 
 
 	//starting point for outer circle points
@@ -290,20 +292,29 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	//for each subdivision, calculate the x and y positions for the outside points
 	for (int i = 0; i < a_nSubdivisions; i++)
 	{
-
-
+		//make a point in space relative to center point
+		//cos gives x pos
+		//sin gives y pos
+		//z is depth, not needed for circle
+		GLfloat sin_angle = sin(first) * a_fRadius;
+		GLfloat cos_angle = cos(first) * a_fRadius;
+		GLfloat height = a_fHeight / 2.0f;
 		vector3 temp = vector3(
-			sin(first) * a_fRadius,
-			//adjusted for radius
-			-a_fHeight / 2.0f,
-			cos(first) * a_fRadius
+			sin_angle,
+			height-a_fHeight,
+			cos_angle
 		);
-
+		vector3 tempCopyVector = vector3(
+			cos_angle,
+			height ,
+			sin_angle
+		);
 		//add onto the outer angle to begin at the next point
 		first += second;
 
 		//add point onto vertex array
 		vertex.push_back(temp);
+		vertexCopy.push_back(tempCopyVector);
 	}
 
 	//calculate triangles and their respective points
@@ -312,46 +323,16 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 		//first is the center of the circle, second is the vertex that was pushed to the array, 
 		//third is the next point after the previous tri adjusted to the number of subdivisions
 		AddTri(
-			vector3(0.0f, 0.0f, 0.0f),
+			vector3(0.0f, a_fHeight / 2.0f, 0.0f),
 			vertex[i],
 			vertex[(i + 1) % a_nSubdivisions]
 		);
-	}
-
-	//-----------------
-
-	//for each subdivision, calculate the x and y positions for the outside points
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		//make a point in space relative to center point
-		//cos gives x pos
-		//sin gives y pos
-		vector3 temp = vector3(
-			cos(first) * a_fRadius,
-			-a_fHeight / 2.0f,
-			sin(first) * a_fRadius
-
-		);
-
-		//add onto the outer angle to begin at the next point
-		first += second;
-
-		//add point onto vertex array
-		vertex2.push_back(temp);
-	}
-
-	//calculate triangles and their respective points
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		//first is the center of the circle, second is the vertex that was pushed to the array, 
-		//third is the next point after the previous tri adjusted to the number of subdivisions
 		AddTri(
 			vector3(0.0f, -a_fHeight / 2.0f, 0.0f),
-			vertex2[i],
-			vertex2[(i + 1) % a_nSubdivisions]
+			vertex[(i + 1) % a_nSubdivisions],
+			vertex[i]
 		);
 	}
-	// -------------------------------
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -374,12 +355,10 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Init();
 
 	// Replace this with your code
-	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	//make vector array to store points
 	std::vector<vector3 > vertex;
-	std::vector<vector3 > vertex2;
-	std::vector<vector3 > vertex3;
-
+	std::vector<vector3 > vertexCopy;
+	GLfloat height = a_fHeight / 2.0f;
 
 
 	//starting point for outer circle points
@@ -395,17 +374,27 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 		//cos gives x pos
 		//sin gives y pos
 		//z is depth, not needed for circle
+		GLfloat sin_angle = sin(first) * a_fRadius;
+		GLfloat cos_angle = cos(first) * a_fRadius;
+
 		vector3 temp = vector3(
-			sin(first) * a_fRadius,
-			a_fHeight / 2.0f,
-			cos(first) * a_fRadius
+			sin_angle,
+			height,
+			cos_angle
 		);
+		temp = temp - vector3(0.0f, height, 0.0f);
+		vector3 tempCopyVector = vector3(
+			sin_angle,
+			height,
+			cos_angle);
+		tempCopyVector = tempCopyVector + vector3(0.0f, height, 0.0f);
 
 		//add onto the outer angle to begin at the next point
 		first += second;
 
 		//add point onto vertex array
 		vertex.push_back(temp);
+		vertexCopy.push_back(tempCopyVector);
 	}
 
 	//calculate triangles and their respective points
@@ -413,50 +402,27 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	{
 		//first is the center of the circle, second is the vertex that was pushed to the array, 
 		//third is the next point after the previous tri adjusted to the number of subdivisions
+		//top
 		AddTri(
-			vector3(0.0f, a_fHeight / 2.0f, 0.0f),
-			vertex[i],
-			vertex[(i + 1) % a_nSubdivisions]
+			vector3(0.0f, 0.0f, 0.0f) - vector3(0.0f, height, 0.0f),
+			vertex[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertex[i] - vector3(0.0f, height, 0.0f)
+
 		);
-	}
-
-	//----------------- BOTTOM
-
-	//for each subdivision, calculate the x and y positions for the outside points
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		//make a point in space relative to center point
-		//cos gives x pos
-		//sin gives y pos
-		vector3 temp = vector3(
-			cos(first) * a_fRadius,
-			-a_fHeight / 2.0f,
-			sin(first) * a_fRadius
-		);
-
-		//add onto the outer angle to begin at the next point
-		first += second;
-
-		//add point onto vertex array
-		vertex2.push_back(temp);
-	}
-
-	//calculate triangles and their respective points
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		//first is the center of the circle, second is the vertex that was pushed to the array, 
-		//third is the next point after the previous tri adjusted to the number of subdivisions
+		//bottom
 		AddTri(
-			vector3(0.0f, -a_fHeight/2.0f, 0.0f),
-			vertex2[i],
-			vertex2[(i + 1) % a_nSubdivisions]
+			vector3(0.0f, height * 2, 0.0f) - vector3(0.0f, height, 0.0f),
+			vertexCopy[i] - vector3(0.0f, height, 0.0f),
+			vertexCopy[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f)
 		);
+
 	}
 
-	//AddQuad( vertex2[1], vertex2[0], vertex[0], vertex[1]);
-	
 	for (int i = 0; i < a_nSubdivisions; i++) {
-		AddQuad(vertex2[(i + 1) % a_nSubdivisions], vertex2[i],  vertex[i], vertex[(i + 1) % a_nSubdivisions]);
+		AddQuad(vertexCopy[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertexCopy[i] - vector3(0.0f, height, 0.0f),
+			vertex[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertex[i] - vector3(0.0f, height, 0.0f));
 	}
 	
 	// Adding information about color
@@ -486,7 +452,107 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+		//make vector array to store points
+	std::vector<vector3 > vertex;
+	std::vector<vector3 > vertexCopy;
+	std::vector<vector3 > innerCircle_lower;
+	std::vector<vector3 > innerCircle_upper;
+
+
+	GLfloat height = a_fHeight / 2.0f;
+
+
+	//starting point for outer circle points
+	GLfloat first = 0;
+
+	//this gives us how much we want to go around the circle by to begin the next triangle in the circle
+	GLfloat second = (2 * PI / a_nSubdivisions);
+
+	//generate circle
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//make a point in space relative to center point
+		//cos gives x pos
+		//sin gives y pos
+		//z is depth, not needed for circle
+		GLfloat sin_angle = sin(first) * a_fOuterRadius;
+		GLfloat cos_angle = cos(first) * a_fOuterRadius;
+
+		GLfloat sin_angle_inner = sin(first) * a_fInnerRadius;
+		GLfloat cos_angle_inner = cos(first) * a_fInnerRadius;
+
+		vector3 temp = vector3(
+			sin_angle,
+			height,
+			cos_angle
+		);
+		temp = temp - vector3(0.0f, height, 0.0f);
+		vector3 tempCopyVector = vector3(
+			sin_angle,
+			height,
+			cos_angle);
+		tempCopyVector = tempCopyVector + vector3(0.0f, height, 0.0f);
+
+		vector3 tempInner = vector3(
+			sin_angle_inner,
+			height,
+			cos_angle_inner
+		);
+		tempInner = tempInner - vector3(0.0f, height, 0.0f);
+
+		vector3 tempInnerCopyVector = vector3(
+			sin_angle_inner,
+			height,
+			cos_angle_inner
+		);
+		tempInnerCopyVector = tempInnerCopyVector + vector3(0.0f, height, 0.0f);
+
+		//add onto the outer angle to begin at the next point
+		first += second;
+
+		//add point onto vertex array
+		vertex.push_back(temp);
+		vertexCopy.push_back(tempCopyVector);
+
+		innerCircle_upper.push_back(tempInner);
+		innerCircle_lower.push_back(tempInnerCopyVector);
+
+
+	}
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		//outter
+		AddQuad(
+			vertexCopy[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertexCopy[i] - vector3(0.0f, height, 0.0f),
+			vertex[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertex[i] - vector3(0.0f, height, 0.0f)
+		);
+
+		//inner
+		AddQuad(
+			innerCircle_upper[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			innerCircle_upper[i] - vector3(0.0f, height, 0.0f),
+			innerCircle_lower[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			innerCircle_lower[i] - vector3(0.0f, height, 0.0f)
+		);
+
+		//top
+		AddQuad(
+			innerCircle_lower[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			innerCircle_lower[i] - vector3(0.0f, height, 0.0f),
+			vertexCopy[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertexCopy[i] - vector3(0.0f, height, 0.0f)
+		);
+		//bottom
+		AddQuad(
+			vertex[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertex[i] - vector3(0.0f, height, 0.0f),
+			innerCircle_upper[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			innerCircle_upper[i] - vector3(0.0f, height, 0.0f)
+
+		);
+	}
 	// -------------------------------
 
 	// Adding information about color

@@ -3,8 +3,13 @@ void Application::InitVariables(void)
 {
 	//Make MyMesh object
 	m_pMesh = new MyMesh();
+	m_pCube = new MyMesh();
 	//Generate a circle
-	m_pMesh->GenerateCircle(5.0f, 12, C_YELLOW);
+	//m_pMesh->GenerateCircle(5.0f, 12, C_YELLOW);
+	//m_pCube->GenerateCube(2.0f, C_BLUE);
+	//m_pMesh->GenerateTube(5.0f, 3.0f, 3.0f, 7, C_RED);
+	m_pMesh->GenerateTorus(5.0f, 3.0f, 8, 5, C_BLUE);
+
 
 }
 void Application::Update(void)
@@ -25,7 +30,8 @@ void Application::Display(void)
 
 	//Render the mesh
 	m_pMesh->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), ToMatrix4(m_qArcBall));
-		
+	m_pCube->Render(m_pCameraMngr->GetProjectionMatrix(), m_pCameraMngr->GetViewMatrix(), ToMatrix4(m_qArcBall));
+
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 	
