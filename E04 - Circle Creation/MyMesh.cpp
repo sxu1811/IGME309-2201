@@ -678,6 +678,9 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 		);
 		
 
+		//rotate this vector3 around the z axis
+
+
 		//add onto the outer angle to begin at the next point
 		first += second;
 
