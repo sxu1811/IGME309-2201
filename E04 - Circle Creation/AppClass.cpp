@@ -8,7 +8,7 @@ void Application::InitVariables(void)
 	//m_pMesh->GenerateCircle(5.0f, 12, C_YELLOW);
 	//m_pCube->GenerateCube(2.0f, C_BLUE);
 	//m_pMesh->GenerateTube(5.0f, 3.0f, 3.0f, 7, C_RED);
-	m_pMesh->GenerateTorus(5.0f, 3.0f, 8, 5, C_BLUE);
+	m_pMesh->GenerateSphere(5.0f, 6, C_YELLOW);
 
 
 }

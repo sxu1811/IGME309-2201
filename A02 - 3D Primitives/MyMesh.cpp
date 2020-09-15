@@ -584,8 +584,70 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
 	// -------------------------------
+
+//radius of circle
+	GLfloat radius = ((a_fOuterRadius - a_fInnerRadius) / 2);
+
+	//circle centers should this far from 0
+	GLfloat distanceFromZero = a_fInnerRadius + radius;
+
+	//starting point for outer circle points
+	GLfloat first = 0;
+	GLfloat second = (2 * PI / static_cast<float>(a_nSubdivisionsA));
+
+	GLfloat circleAngle = 0;
+	GLfloat circleAngleDelta = 360.0f / static_cast<float>(a_nSubdivisionsB);
+
+	std::vector<std::vector<vector3>> listOfCircles;
+
+	vector3 temp = ZERO_V3;
+	matrix4 space;
+
+	//gen circle
+	for (int j = 0; j < a_nSubdivisionsB; j++)
+	{
+		first = 0;
+
+		std::vector<vector3>innerList;
+		//create circles
+		for (int i = 0; i < a_nSubdivisionsA; i++)
+		{
+			temp = vector3(
+				cos(first) * radius,
+				sin(first) * radius,
+				0.0f
+			);
+
+			space = glm::rotate(IDENTITY_M4, glm::radians(circleAngle), AXIS_Y);
+			space = glm::translate(space, vector3(distanceFromZero, 0.0f, 0.0f));
+			temp = space * vector4(temp, 1.0f);
+
+			first += second;
+			innerList.push_back(temp);
+		}
+
+		//save circles to another vertex
+		listOfCircles.push_back(innerList);
+		circleAngle += circleAngleDelta;
+	}
+
+	//draw quads between circles
+	for (int j = 0; j < a_nSubdivisionsA; j++)
+	{
+		for (int i = 0; i < a_nSubdivisionsB; i++)
+		{
+			vector3 bottomLeft = listOfCircles[i][j];
+			vector3 bottomRight = listOfCircles[(i + 1) % a_nSubdivisionsB][j];
+
+			vector3 topLeft = listOfCircles[i][(j + 1) % a_nSubdivisionsA];
+			vector3 topRight = listOfCircles[(i + 1) % a_nSubdivisionsB][(j + 1) % a_nSubdivisionsA];
+
+			AddQuad(bottomLeft, bottomRight, topLeft, topRight);
+		}
+
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -609,8 +671,93 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	Init();
 
 	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
+	//GenerateCube(a_fRadius * 2.0f, a_v3Color);
 	// -------------------------------
+	std::vector<vector3 > vertex;
+	std::vector<vector3 > vertexCopy;
+	std::vector<vector3 > middleCircle;
+
+	GLfloat height = 2.0f;
+
+
+	//starting point for outer circle points
+	GLfloat first = 0;
+
+	//this gives us how much we want to go around the circle by to begin the next triangle in the circle
+	GLfloat second = (2 * PI / a_nSubdivisions);
+
+	//for each subdivision, calculate the x and y positions for the outside points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//make a point in space relative to center point
+		//cos gives x pos
+		//sin gives y pos
+		//z is depth, not needed for circle
+		GLfloat sin_angle = sin(first) * a_fRadius;
+		GLfloat cos_angle = cos(first) * a_fRadius;
+
+		vector3 temp = vector3(
+			sin_angle,
+			height + 1,
+			cos_angle
+		);
+		temp = temp - vector3(0.0f, height, 0.0f);
+
+		vector3 tempCopyVector = vector3(
+			sin_angle,
+			height - 1,
+			cos_angle);
+		tempCopyVector = tempCopyVector + vector3(0.0f, height, 0.0f);
+
+		vector3 tempMiddle = vector3(
+			sin_angle * 2,
+			0.0f,
+			cos_angle * 2);
+		tempMiddle = tempMiddle + vector3(0.0f, height, 0.0f);
+
+		//add onto the outer angle to begin at the next point
+		first += second;
+
+		//add point onto vertex array
+		vertex.push_back(temp);
+		vertexCopy.push_back(tempCopyVector);
+		middleCircle.push_back(tempMiddle);
+
+	}
+
+	//calculate triangles and their respective points
+	for (int i = 0; i < a_nSubdivisions; i++)
+	{
+		//first is the center of the circle, second is the vertex that was pushed to the array, 
+		//third is the next point after the previous tri adjusted to the number of subdivisions
+		//top
+		AddTri(
+			vector3(0.0f, 0.0f, 0.0f) - vector3(0.0f, height, 0.0f),
+			vertex[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertex[i] - vector3(0.0f, height, 0.0f)
+
+		);
+		//bottom
+		AddTri(
+			vector3(0.0f, height * 2, 0.0f) - vector3(0.0f, height, 0.0f),
+			vertexCopy[i] - vector3(0.0f, height, 0.0f),
+			vertexCopy[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f)
+		);
+
+	}
+
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		AddQuad(
+			vertexCopy[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertexCopy[i] - vector3(0.0f, height, 0.0f),
+			middleCircle[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			middleCircle[i] - vector3(0.0f, height, 0.0f));
+		AddQuad(
+			middleCircle[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			middleCircle[i] - vector3(0.0f, height, 0.0f),
+			vertex[(i + 1) % a_nSubdivisions] - vector3(0.0f, height, 0.0f),
+			vertex[i] - vector3(0.0f, height, 0.0f));
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
