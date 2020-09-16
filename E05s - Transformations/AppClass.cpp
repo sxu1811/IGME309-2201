@@ -14,7 +14,7 @@ void Application::InitVariables(void)
 	{
 		MyMesh* pMesh = new MyMesh();
 		m_pMeshList.push_back(pMesh);
-		m_pMeshList[i]->GenerateCube(1.0f, C_BLACK);
+		m_pMeshList[i]->GenerateSphere(1.0f, 5, C_BLACK);
 	}
 }
 void Application::Update(void)
@@ -50,6 +50,7 @@ void Application::Display(void)
 	v3Position.x = fHorizontal + fTimer;
 	v3Position.y = glm::cos(glm::radians(fTimer * 60.0f));
 	matrix4 m4Position = glm::translate(vector3(-5.0f, -3.0f, -15.0f)) * glm::translate(v3Position);
+
 	//first row
 	m_pMeshList[i]->Render(m4Projection, m4View, glm::translate(m4Position, vector3( 3.0f, 0.0f, 0.0f))); ++i;
 	m_pMeshList[i]->Render(m4Projection, m4View, glm::translate(m4Position, vector3( 4.0f, 0.0f, 0.0f))); ++i;
