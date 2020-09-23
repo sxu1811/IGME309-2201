@@ -16,7 +16,7 @@ class Application
 {
 	uint m_uMeshCount = 10;
 	std::vector<MyMesh*> m_pMeshList;
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	String m_sProgrammer = "Sebastian Unrat";
 private:
 	static ImGuiObject gui; //GUI object
 	
