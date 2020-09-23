@@ -21,9 +21,9 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	//make vector array to store points
 	std::vector<vector3 > vertex;
 	std::vector<vector3 > vertex2;
-	std::vector<vector3 > vertex3;
+	std::vector<vector3 > vertexCopy;
 
-
+	float a_fHeight = 1.0f;
 
 	//starting point for outer circle points
 	GLfloat first = 0;
@@ -38,18 +38,27 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		//cos gives x pos
 		//sin gives y pos
 		//z is depth, not needed for circle
+		GLfloat sin_angle = sin(first) * a_fRadius;
+		GLfloat cos_angle = cos(first) * a_fRadius;
+		GLfloat height = a_fHeight / 2.0f;
+
 		vector3 temp = vector3(
-			sin(first) * a_fRadius,
-			cos(first) * a_fRadius,
-			0.0f
-			
+			sin_angle,
+			height - a_fHeight,
+			cos_angle
 		);
 
+		vector3 tempCopyVector = vector3(
+			cos_angle,
+			height,
+			sin_angle
+		);
 		//add onto the outer angle to begin at the next point
 		first += second;
 
 		//add point onto vertex array
 		vertex.push_back(temp);
+		vertexCopy.push_back(tempCopyVector);
 	}
 
 	//calculate triangles and their respective points
@@ -58,12 +67,16 @@ void MyMesh::GenerateCircle(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		//first is the center of the circle, second is the vertex that was pushed to the array, 
 		//third is the next point after the previous tri adjusted to the number of subdivisions
 		AddTri(
-			vector3(0.0f,0.0f,0.0f), 
+			vector3(0.0f, a_fHeight / 2.0f, 0.0f),
+			vertex[i],
+			vertex[(i + 1) % a_nSubdivisions]
+		);
+		AddTri(
+			vector3(0.0f, (-a_fHeight*2)+a_fHeight/2, 0.0f),
 			vertex[(i + 1) % a_nSubdivisions],
 			vertex[i]
 		);
 	}
-
 	
 	// Adding information about color
 	CompleteMesh(a_v3Color);
