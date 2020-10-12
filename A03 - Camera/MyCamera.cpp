@@ -158,5 +158,31 @@ void MyCamera::MoveForward(float a_fDistance)
 	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+void MyCamera::RotateX(float a_fAmount)
+{
+	//glm::rotate(glm::translate(v3Position), glm::radians(static_cast<float>(dTimer) * 20.0f), AXIS_X)
+	
+	m_v3Position += vector3(0.0f, 0.0f, 0.0f);
+	m_v3Target = glm::rotate(m_v3Target, glm::radians(static_cast<float>(-a_fAmount)), AXIS_X);
+	m_v3Above += vector3(0.0f, 0.0f, 0.0f);
+}
+
+void MyCamera::RotateY(float a_fAmount)
+{
+	m_v3Position += vector3(0.0f, 0.0f, 0.0f);
+	m_v3Target = glm::rotate(m_v3Target, glm::radians(static_cast<float>(-a_fAmount)), AXIS_Y);
+	m_v3Above += vector3(0.0f, 0.0f, 0.0f);
+}
+
+void MyCamera::MoveVertical(float a_fDistance)
+{
+	m_v3Position += vector3(0.0f, a_fDistance, 0.0f);
+	m_v3Target += vector3(0.0f, a_fDistance, 0.0f);
+	m_v3Above += vector3(0.0f, a_fDistance, 0.0f);
+}//Needs to be defined
+void MyCamera::MoveSideways(float a_fDistance)
+{
+	m_v3Position += vector3(-a_fDistance, 0.0f, 0.0f);
+	m_v3Target += vector3(-a_fDistance, 0.0f, 0.0f);
+	m_v3Above += vector3(-a_fDistance, 0.0f, 0.0f);
+}//Needs to be defined

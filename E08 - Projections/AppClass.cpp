@@ -3,7 +3,7 @@ using namespace Simplex;
 void Application::InitVariables(void)
 {
 	//Change this to your name and email
-	m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "Sebastian Unrat";
 
 	//Set the position and target of the camera
 	//(I'm at [0,0,10], looking at [0,0,0] and up is the positive Y axis)
@@ -54,21 +54,30 @@ void Application::Display(void)
 		break;
 	case 2:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPerspective(false); // turn off perspective for view 2
 		break;
 	case 3:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPosition(vector3(1.0f,0.0f,0.0f) * 20.0f); // push camera out along x and scale
+		m_pCamera->SetUp(vector3(0.0f, 0.0f, 1.0f) * -1.0f); //flip objects to be right side up
 		break;
 	case 4:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPosition(vector3(0.0f, 0.0f, 1.0f) * -10.0f ); //push camera out along z
 		break;
 	case 5:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPosition(vector3(0.0f, 0.0f, 1.0f) * -15.0f); //push camera out along z
+		m_pCamera->SetNearFar(vector2(5.0f, 1000.0f)); //change camera planes
 		break;
 	case 6:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPosition(vector3(0.0f, 0.0f, 1.0f) * -15.0f); //push camera out along z
+		m_pCamera->SetNearFar(vector2(0.001f, 10.0f)); //change camera planes
 		break;
 	case 7:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetUp(vector3(0.0f, 1.0f, 0.0f) * -1.0f); //flip objects to be other side up
 		break;
 	}
 

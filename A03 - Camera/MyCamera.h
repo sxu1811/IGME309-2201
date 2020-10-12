@@ -230,6 +230,20 @@ public:
 	OUTPUT: ---
 	*/
 	void MoveSideways(float a_fDistance = 0.1f);
+
+	/*
+	USAGE: turns the camera up or down
+	ARGUMENTS: float a_fAmount = 0.1f -> amount of rotation
+	OUTPUT: ---
+	*/
+	void RotateX(float a_fAmount = 0.1f);
+
+	/*
+	USAGE: turns the camera up or down
+	ARGUMENTS: float a_fAmount = 0.1f -> amount of rotation
+	OUTPUT: ---
+	*/
+	void RotateY(float a_fAmount = 0.1f);
 };
 
 } //namespace Simplex
