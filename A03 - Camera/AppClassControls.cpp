@@ -369,8 +369,8 @@ void Application::CameraRotation(float a_fSpeed)
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
 	//Change the Yaw and the Pitch of the camera
-	m_pCamera->RotateY(fAngleY * 0.25f);
-	m_pCamera->RotateX(-fAngleX * 0.25f);
+	vector3 tempPos = m_pCamera->GetPosition();
+	m_pCamera->RotateCamera(fAngleX * 3.0f, -fAngleY * 3.0f, tempPos);
 
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
@@ -391,9 +391,9 @@ void Application::ProcessKeyboard(void)
 
 	//key input for buttons pressed to move camera
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-		m_pCamera->MoveForward(fSpeed);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
 		m_pCamera->MoveForward(-fSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+		m_pCamera->MoveForward(fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
 		m_pCamera->MoveVertical(fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))

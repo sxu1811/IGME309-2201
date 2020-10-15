@@ -150,39 +150,61 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 	}
 }
 
+//forward and backward
 void MyCamera::MoveForward(float a_fDistance)
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	//calculate moving forward
+	m_v3Forward = glm::normalize(m_v3Target - m_v3Position); //forward vector
+
+	//add current position/target/above to the scaled forward vector by distance and set it to the position/target/above
+	m_v3Position = m_v3Position + (glm::normalize(m_v3Forward) * vector3(0.0f, 0.0f, -a_fDistance));
+	m_v3Target = m_v3Target + (glm::normalize(m_v3Forward) * vector3(0.0f, 0.0f, -a_fDistance));
+	m_v3Above = m_v3Above + (glm::normalize(m_v3Forward) * vector3(0.0f, 0.0f, -a_fDistance));
+
 }
 
-void MyCamera::RotateX(float a_fAmount)
-{
-	//glm::rotate(glm::translate(v3Position), glm::radians(static_cast<float>(dTimer) * 20.0f), AXIS_X)
-	
-	m_v3Position += vector3(0.0f, 0.0f, 0.0f);
-	m_v3Target = glm::rotate(m_v3Target, glm::radians(static_cast<float>(-a_fAmount)), AXIS_X);
-	m_v3Above += vector3(0.0f, 0.0f, 0.0f);
-}
-
-void MyCamera::RotateY(float a_fAmount)
-{
-	m_v3Position += vector3(0.0f, 0.0f, 0.0f);
-	m_v3Target = glm::rotate(m_v3Target, glm::radians(static_cast<float>(-a_fAmount)), AXIS_Y);
-	m_v3Above += vector3(0.0f, 0.0f, 0.0f);
-}
-
+//up and down
 void MyCamera::MoveVertical(float a_fDistance)
 {
-	m_v3Position += vector3(0.0f, a_fDistance, 0.0f);
-	m_v3Target += vector3(0.0f, a_fDistance, 0.0f);
-	m_v3Above += vector3(0.0f, a_fDistance, 0.0f);
-}//Needs to be defined
+	//calculate moving vertical
+	m_v3Up = glm::normalize(m_v3Above - m_v3Position); //up vector
+
+	//add current position/target/above to the scaled forward vector by distance and set it to the position/target/above
+	m_v3Position = m_v3Position + (glm::normalize(m_v3Up) * vector3(0.0f, -a_fDistance, 0.0f));
+	m_v3Target = m_v3Target + (glm::normalize(m_v3Up) * vector3(0.0f, -a_fDistance, 0.0f));
+	m_v3Above = m_v3Above + (glm::normalize(m_v3Up) * vector3(0.0f, -a_fDistance, 0.0f));
+}
+
+//left and right
 void MyCamera::MoveSideways(float a_fDistance)
 {
-	m_v3Position += vector3(-a_fDistance, 0.0f, 0.0f);
-	m_v3Target += vector3(-a_fDistance, 0.0f, 0.0f);
-	m_v3Above += vector3(-a_fDistance, 0.0f, 0.0f);
-}//Needs to be defined
+	//calculate moving sideways	
+	m_v3Right = glm::cross(m_v3Forward, m_v3Up);	//right vector
+
+	//add current position/target/above to the scaled forward vector by distance and set it to the position/target/above
+	m_v3Position = m_v3Position + (glm::normalize(m_v3Right) * vector3(-a_fDistance, 0.0f, 0.0f));
+	m_v3Target = m_v3Target + (glm::normalize(m_v3Right) * vector3(-a_fDistance, 0.0f, 0.0f));
+	m_v3Above = m_v3Above + (glm::normalize(m_v3Right) * vector3(-a_fDistance, 0.0f, 0.0f));
+}
+
+void MyCamera::RotateCamera(float a_fAngleX, float a_fAngleY, vector3 a_v3Pos)
+{
+	m_v3Position = a_v3Pos;
+	//update positional vectors
+	m_v3Forward = glm::normalize(m_v3Target - m_v3Position); //forward vector
+	m_v3Up = glm::normalize(m_v3Above - m_v3Position); //up vector
+	m_v3Right = glm::normalize(glm::cross(m_v3Forward, m_v3Up));	//right vector
+
+	//create quaternions
+	quaternion qYlocal = glm::angleAxis(glm::radians(a_fAngleY), AXIS_Y); //yaw around local y axis 
+	quaternion qXlocal = glm::angleAxis(glm::radians(a_fAngleX), m_v3Right); //pitch around local x axis 
+
+	//apply rotation by mutliplying vectors by the quaternion
+	m_v3Forward = m_v3Forward * qYlocal * qXlocal;
+	m_v3Right = m_v3Right * qXlocal;
+
+	m_v3Target = glm::normalize(m_v3Forward) + m_v3Position;
+	
+	
+	//m_v3Target = m_v3Forward + m_v3Position;
+}
