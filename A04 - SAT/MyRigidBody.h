@@ -225,6 +225,12 @@ public:
 	Output: ---
 	*/
 	void SetModelMatrix(matrix4 a_m4ModelMatrix);
+
+	/*
+	Usage: get center of models
+	Arguments:
+	Output: vector 3 of center of model
+	*/
 #pragma endregion
 	
 private:
