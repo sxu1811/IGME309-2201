@@ -402,6 +402,13 @@ void Application::ProcessKeyboard(void)
 		m_pCamera->MoveSideways(fSpeed);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
 		m_pCamera->MoveSideways(-fSpeed);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
+		std::cout << "Subtract";
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
+		std::cout << "Add";
+
+		
+
 
 
 #pragma endregion
